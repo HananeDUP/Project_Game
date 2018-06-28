@@ -1,5 +1,6 @@
 body {
   text-align: center;
+  padding:0;
 }
 
 body h1 {
@@ -22,8 +23,8 @@ body button {
 
 body img {
 
-  width:140px;
-  height: 170px;
+  width:130px;
+  height:150px;
 }
 
 /* #cvx-game-board {

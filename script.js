@@ -7,6 +7,9 @@ imgBaby.src = "./images/baby_right.jpg";
 var imgBottle2 = new Image();
 imgBottle2.src = "./images/bottle.jpg";
 
+var imgCanape = new Image();
+imgCanape.src = "./images/canape.jpg";
+
 var canvas=document.getElementById("cvx-game");
 var ctx = canvas.getContext("2d");
 
@@ -18,8 +21,8 @@ var mybackgroundImage = {
     this.x %= canvas.width;
   },
   draw: function() {
-    ctx.drawImage(imgBackground, this.x, 0, 900, 400);
-    ctx.drawImage(imgBackground, this.x+canvas.width, 0, 900,400);
+    ctx.drawImage(imgBackground, this.x, 0, canvas.width, canvas.height);
+    ctx.drawImage(imgBackground, this.x+canvas.width, 0, canvas.width, canvas.height);
   }
 }
 
@@ -43,23 +46,46 @@ var myBaby = {
   }
 }
 
-function Bottle() {
-  this.x=500;
-  this.y=100;
+
+function Obstacle(x,maxHeight,minHeight) {
+  this.x=x;
+  this.maxHeight=maxHeight;
+  this.minHeight=minHeight;
+  this.y=Math.floor(Math.random()*(this.maxHeight-this.minHeight+1)+this.minHeight);
+
 }
 
-Bottle.prototype.draw=function() {
-  ctx.drawImage(imgBottle2, this.x, this.y, 150, 100);
+Obstacle.prototype.draw=function(img,obs_width,obs_height) {
+  ctx.drawImage(img, this.x, this.y, obs_width, obs_height);
 }
 
+// function Bottle(x) {
+//   this.x=x;
+//   this.maxHeight=350;
+//   this.minHeight=50;
+//   this.y=Math.floor(Math.random()*(this.maxHeight-this.minHeight+1)+this.minHeight);
+// }
+
+// Bottle.prototype.draw=function() {
+//   ctx.drawImage(imgBottle2, this.x, this.y, 100, 50);
+// }
+
+// function ObstacleCanape()
 
 var bottles=[];
 for (var i = 1; i < 100; i++) {
-  var bottle = new Bottle(
-    i * 150,i*100
-
+  var bottle = new Obstacle(
+    i * 400,350,50
   );
 bottles.push(bottle);
+}
+
+var canapes=[];
+for (var i = 1; i < 100; i++) {
+  var canape = new Obstacle(
+    i * 350,canvas.height-100,50
+  );
+  canapes.push(canape);
 }
 
 function updateCanvas () {
@@ -70,9 +96,12 @@ function updateCanvas () {
 
   bottles.forEach(elem => {
     elem.x -= 2;
-    elem.draw();
+    elem.draw(imgBottle2,100,50);
   });
-
+  canapes.forEach(elem => {
+    elem.x -= 2;
+    elem.draw(imgCanape,150,200);
+  });
   var myreq;
   myreq = requestAnimationFrame(updateCanvas);
 
@@ -84,10 +113,8 @@ function stop(myreq) {
 }
 
 window.onload = function() {
-  document.getElementById("start-button").onclick = function() {
+  
     startGame();
-    document.getElementById("start-button").blur();
-  };
 };
 
 function startGame() { 
