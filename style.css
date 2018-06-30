@@ -21,12 +21,31 @@ body button {
   height:50px;
 }
 
-body img {
+.index-page img {
 
-  width:130px;
-  height:150px;
+  width:300px;
+  height:350px;
 }
 
-/* #cvx-game-board {
-  background-color: red;
-} */
+.index-page div {
+  border: 1px;
+  border-radius: 5px;
+  background-color: #20B2AA;
+  color: white;
+  width: 200px;
+  height: 80px;
+  font-size: 20px;
+  margin-left: 550px;
+  margin-top: 40px;
+}
+
+div a {
+  padding-top: 60px;
+  
+}
+
+.index-page {
+  background-color:#F8F8FF;
+
+
+}
