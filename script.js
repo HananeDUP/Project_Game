@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////IMAGES///////////////////////////////////////
 
 var imgBackground = new Image();
-imgBackground.src = "./images/parquet.jpg";
+imgBackground.src = "./images/parquet_1.jpg";
 
 var imgBabyRight = new Image();
 imgBabyRight.src = "./images/baby_right_transp.png";
@@ -16,7 +16,7 @@ var imgBabyDown = new Image();
 imgBabyDown.src = "./images/baby_down_transp.png";
 
 var imgHappyBaby = new Image();
-imgHappyBaby.src = "./images/happy_baby.jpg";
+imgHappyBaby.src = "./images/happy_baby_transp.png";
 
 var imgBabySmile = new Image();
 imgBabySmile.src = "./images/baby_sourire_transp.png";
@@ -26,6 +26,9 @@ imgBottle2.src = "./images/baby_bottle_2_transp.png";
 
 var imgCanape = new Image();
 imgCanape.src = "./images/canape_transp.png";
+
+var imgCanapeObs = new Image();
+imgCanapeObs.src = "./images/canape_obs_transp.png";
 
 var canvas=document.getElementById("cvx-game");
 var ctx = canvas.getContext("2d");
@@ -72,12 +75,17 @@ var myBaby = {
     this.imgBaby=imgBabyLeft;
   },
   babyVsBottleCollusion: function(obs){
-    if((obs.x-this.x) <this.width && ((obs.y-this.y)<100 && (obs.y-this.y)>-50)){
+    if((obs.x-this.x) <this.width-20 && ((obs.y-this.y)<90 && (obs.y-this.y)>-45)){
       return "collusion";
     }
   },
   babyVsMomCollusion: function(obs){
-    if((obs.x-this.x) <this.width && ((obs.y-this.y)<100 && (obs.y-this.y)>-200)){
+    if((obs.x-this.x) <this.width-20 && ((obs.y-this.y<90 && (obs.y-this.y)>-160))){
+      return "collusion";
+    }
+  },
+  babyVsCanapeCollusion: function(obs){
+    if((obs.x-this.x) <(this.width-200) && ((obs.y-this.y)<0 && (obs.y-this.y)>-459)){
       return "collusion";
     }
   }
@@ -123,7 +131,23 @@ for (var i = 1; i < 100; i++) {
   );
   canapes.push(canape);
 }
+
+var canapesObs=[];
+for (var i = 1; i < 100; i++) {
+  var canapeObs = new Obstacle(
+    i * 600,200,50
+  );
+  canapesObs.push(canapeObs);
+}
+
+
 ///////////////////////////////////////////////////////////////////OTHERS//////////////////////////////////////////
+
+function findObs(obs,x,y) {
+  obs.x=x;
+  obs.y=y;
+  return obs;
+}
 var score=parseInt(localStorage.getItem('score'));
 
 function scoreFill(score) {
@@ -159,6 +183,11 @@ function updateCanvas () {
     elem.draw(imgCanape,150,200);
   });
 
+  canapesObs.forEach(elem => {
+    elem.x -= 2;
+    elem.draw(imgCanapeObs,500,550)
+  });
+
   // bottles2.forEach(elem => {
   //   elem.x -= 4;
   //   elem.draw(imgBottle2,100,50);
@@ -168,17 +197,19 @@ function updateCanvas () {
   var myreq;
   myreq = requestAnimationFrame(updateCanvas);
 
-  var collusion_baby_bottle=bottles.some(obst => {
+  var collusion_baby_bottle=bottles.findIndex(obst => {
     return myBaby.babyVsBottleCollusion(obst);
   })
-
-  if (collusion_baby_bottle) {
+  var bottledrink=collusion_baby_bottle;
+  if (collusion_baby_bottle != -1) {
     stop(myreq); 
+    // var index_bottle= bottles.findIndex((o)=> {return o.x === bottledrink.x});
+    bottles.splice(collusion_baby_bottle,1);
     ctx.drawImage(imgHappyBaby, myBaby.x, myBaby.y, myBaby.width, myBaby.height); 
     score+=5;
     localStorage.setItem('score',score);
     setTimeout(function(){
-      window.location.href = "game.html";
+      updateCanvas();
     },300); 
   }
 
@@ -193,15 +224,20 @@ function updateCanvas () {
     localStorage.setItem('score',score);
     setTimeout(function(){
       window.location.href = "game.html";
-      // requestAnimationFrame(updateCanvas);
+      // updateCanvas();
     },300); 
   };
-  scoreFill(score);
   
+  var collusion_baby_canape=canapesObs.some(obst => {
+    return myBaby.babyVsCanapeCollusion(obst);
+  })
+
+  if (collusion_baby_canape) {
+    stop(myreq); 
+    endGame(); 
+  };
+  scoreFill(score);
 };
-
-
-
 
 
 //////////////////////////////////////////////////////////ONLOAD FUNCTION///////////////////////////////////////////
