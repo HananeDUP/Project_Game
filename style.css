@@ -2,7 +2,9 @@ body {
   text-align: center;
   padding:0;
 }
-
+#cvx-game {
+  border:200px solid red;
+}
 body h1 {
   font-size: 30px;
   text-transform: uppercase;
@@ -27,7 +29,7 @@ body button {
   height:350px;
 }
 
-.index-page div {
+/* .index-page div {
   border: 1px;
   border-radius: 5px;
   background-color: #20B2AA;
@@ -37,7 +39,7 @@ body button {
   font-size: 20px;
   margin-left: 550px;
   margin-top: 40px;
-}
+} */
 
 div a {
   padding-top: 60px;
