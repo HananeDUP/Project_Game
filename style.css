@@ -2,9 +2,9 @@ body {
   text-align: center;
   padding:0;
 }
-#cvx-game {
+/* #cvx-game {
   border:200px solid red;
-}
+} */
 body h1 {
   font-size: 30px;
   text-transform: uppercase;
@@ -23,11 +23,11 @@ body button {
   height:50px;
 }
 
-.index-page img {
-
+/* .index-page img {
   width:300px;
   height:350px;
-}
+  margin-bottom: 20px;
+} */
 
 /* .index-page div {
   border: 1px;
@@ -46,8 +46,37 @@ div a {
   
 }
 
-.index-page {
-  background-color:#F8F8FF;
+.hide span, .hide button {
+  display: inline-block;
+}
 
+.imgPoussette img{
+  width:200px;
+  height:200px;
+  animation: poussette 10s infinite;  
+}
 
+.baby{
+  width:200px;
+  height:250px;
+  margin-bottom: 20px;
+
+}
+
+/* .baby:hover{
+  width:250px;
+  height:300px;
+  transition:width 2s linear, height 2s linear;
+} */
+
+@keyframes poussette {
+  0% {
+    margin-left: 60%;
+    width: 20%;
+  }
+
+  100% {
+    margin-right: 200%;
+    width: 20%;
+  }
 }

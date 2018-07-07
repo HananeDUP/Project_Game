@@ -52,9 +52,11 @@ var mybackgroundImage = {
 }
 
 ///////////////////////////////////////////////////////////////////////BABY//////////////////////////////////////////////
+// var speedB=10;
 var myBaby = {
   x:100,
   y:100,
+  speedB:10,
   height:100,
   width:100,
   imgBaby:imgBabyRight,
@@ -62,19 +64,19 @@ var myBaby = {
     ctx.drawImage(this.imgBaby, this.x, this.y, this.width, this.height);
   },
   moveUp: function(){
-    this.y-=10;
+    this.y-=this.speedB;
     this.imgBaby=imgBabyUp;
   },
   moveDown: function(){
-    this.y+=10;
+    this.y+=this.speedB;
     this.imgBaby=imgBabyDown;
   },
   moveRight: function(){
-    this.x+=10;
+    this.x+=this.speedB;
     this.imgBaby=imgBabyRight;
   },
   moveLeft: function(){
-    this.x-=10;
+    this.x-=this.speedB;
     this.imgBaby=imgBabyLeft;
   },
   babyVsBottleCollusion: function(obs){
@@ -88,12 +90,11 @@ var myBaby = {
     }
   },
   babyVsCanapeCollusion: function(obs){
-    if((obs.x-this.x) <-110 && (obs.y-this.y)<-20 && (obs.y-this.y)>-550){
+    if((obs.x-this.x) <-120 && (obs.x-this.x) >-300 && (obs.y-this.y)<-20 && (obs.y-this.y)>-400){
       return "collusion";
     }
   }
 }
-
 
 ///////////////////////////////////////////////////////////////////////OBSTACLES////////////////////////////////////
 function Obstacle(x,maxHeight,minHeight) {
@@ -150,7 +151,7 @@ for (var i = 1; i < 100; i++) {
 var canapesObs=[];
 for (var i = 1; i < 100; i++) {
   var canapeObs = new Obstacle(
-    i * 600,200,50
+    i * 800,200,50
   );
   canapesObs.push(canapeObs);
 }
@@ -162,7 +163,8 @@ for (var i = 1; i < 100; i++) {
   );
   tetines.push(tetine);
 }
-
+var tetineOK=0;
+var show=true;
 ///////////////////////////////////////////////////////////////////OTHERS//////////////////////////////////////////
 
 function findObs(obs,x,y) {
@@ -183,12 +185,70 @@ function stop(myreq) {
   cancelAnimationFrame(myreq);
 }
 
-// function endGame(){
-//   localStorage.setItem('score',0)
-// }
 
-/////////////////////////////////////////////////////////////////////////Canvas Update///////////////////////////////
-function updateCanvas(tetineOK) {
+function showStartButton(score){
+  $(".start-stop").show();
+  $(".hide").css({
+    display:"flex",
+    flexDirection:'column'
+  });
+  // $(".hide span, .hide button").css("display","inline-block");
+  $("#score").html(score);
+  $(".hide").css({
+    position: 'absolute',
+    top:'30vh',
+    left:'70vh',
+    'font-size':'2em',
+    backgroundColor: 'gray',
+    padding: '20px',
+    borderRadius: '5px',
+    color: 'white'
+  });
+  $('.hide span').css('margin-bottom','20px'),
+  $('.hide button').css({
+    'font-size':'0.8em',
+    'width':'250px'
+  }),
+  document.getElementById("start-button").onclick = function () {
+    window.close();
+    var opened = window.open("");
+    opened.document.write(htmlBody);
+  }
+  document.getElementById("stop-button").onclick = function () {
+    window.close();
+  }
+}
+
+function newLevelShow(LevelName){
+  $('#showLevel').html(LevelName);
+  $('#showLevel').show();
+  $('#showLevel').css({
+    position: 'absolute',
+    top:'10vh',
+    left:'40vw',
+    height: '50px',
+    width: '150px',
+    backgroundColor: 'gray',
+    fontSize: '1.8em',
+    paddingTop:'40px',
+    color:'white',
+    borderRadius: '5px',
+  });
+  level=0;
+  show=false;
+  setTimeout(()=>{
+    $('#showLevel').hide();
+  },300)
+
+}
+
+//////////////////////////////////////////////////SPEED VARIABLES//////////////////////////////////////////////////
+var speedX=2;
+var speedY=1;
+var level=0;
+
+//////////////////////////////////////////////////Canvas Update////////////////////////////////////////////////////
+function updateCanvas() {
   ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   mybackgroundImage.move();
   mybackgroundImage.draw();
@@ -197,36 +257,27 @@ function updateCanvas(tetineOK) {
   // drawObstacle();
 
   bottles.forEach(elem => {
-    elem.x -= 2;
+    elem.x -= speedX;
     elem.draw(imgBottle2,100,50);
   });
 
   canapes.forEach(elem => {
-    elem.x -= 3;
+    elem.x -= speedX+1;
     elem.draw(imgCanape,150,200);
   });
 
   canapesObs.forEach(elem => {
-    elem.x -= 2;
+    elem.x -= speedX;
     elem.draw(imgCanapeObs,500,550)
   });
 
   if(tetineOK===1) {
     tetines.forEach(elem => {
-      elem.y += 1;
+      elem.y += speedY;
       elem.draw(imgTetine,60,60)
     });
   
   }
-
-  // bottles2.forEach(elem => {
-  //   elem.x -= 4;
-  //   elem.draw(imgBottle2,100,50);
-  // });
-
-
-  var myreq;
-  myreq = requestAnimationFrame(updateCanvas);
 
   var collusion_baby_bottle=bottles.findIndex(obst => {
     return myBaby.babyVsBottleCollusion(obst);
@@ -234,14 +285,8 @@ function updateCanvas(tetineOK) {
   
   if (collusion_baby_bottle != -1) {
     stop(myreq); 
-    // var index_bottle= bottles.findIndex((o)=> {return o.x === bottledrink.x});
     bottles.splice(collusion_baby_bottle,1);
-    // ctx.drawImage(imgHappyBaby, myBaby.x, myBaby.y, myBaby.width, myBaby.height); 
     score+=5;
-    localStorage.setItem('score',score);
-    setTimeout(function(){
-      updateCanvas();
-    },300); 
   }
 
   var collusion_baby_mom=canapes.findIndex(obst => {
@@ -250,27 +295,69 @@ function updateCanvas(tetineOK) {
 
   if (collusion_baby_mom!=-1) {
     stop(myreq); 
-    // ctx.drawImage(imgBabySmile, myBaby.x, myBaby.y, myBaby.width, myBaby.height); 
     canapes.splice(collusion_baby_mom,1);
     score+=10;
     localStorage.setItem('score',score);
     setTimeout(function(){
+      for (var i = 1; i < 100; i++) {
+        var tetine = new ObstacleVert(
+          i * 100,500,300
+        );
+        tetines.push(tetine);
+      }
       // window.location.href = "game.html";
-      updateCanvas(1);
+      tetineOK=1;
+      // updateCanvas();
     },300); 
-    
-
   };
   
   var collusion_baby_canape=canapesObs.some(obst => {
     return myBaby.babyVsCanapeCollusion(obst);
   })
+ 
+  scoreFill(score);
+  if( score >=30 && score <=35 && show){
+
+    level=1;
+  }else if( score >=50 && score <=55  && show){
+    level=2;
+  }else if( score >=70 && score <=75  && show){
+    level=3;
+  }else if( score >=90 && score <=95  && show){
+    level=4;
+  }
+
+  if(level===1){
+    speedX=4;
+    speedY=2;
+    myBaby.speedB=20;
+    newLevelShow("LEVEL 1")
+
+  }else if(level === 2){
+    speedX=6;
+    speedY=3;
+    myBaby.speedB=30;
+    newLevelShow("LEVEL 2")
+  }else if(level === 3){
+    speedX=8;
+    speedY=4;
+    myBaby.speedB=40;
+    newLevelShow("LEVEL 3")
+  }else if(level === 4){
+    speedX=10;
+    speedY=5;
+    myBaby.speedB=50;
+    newLevelShow("LEVEL 4")
+  }
+  var myreq;
+  myreq = requestAnimationFrame(updateCanvas);
 
   if (collusion_baby_canape) {
-    stop(myreq); 
+    stop(myreq);
+    showStartButton(score);
     // endGame(); 
   };
-  scoreFill(score);
+
 };
 
 // $(document).ready(function() {
